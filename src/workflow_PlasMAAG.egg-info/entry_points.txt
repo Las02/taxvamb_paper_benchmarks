@@ -1,2 +1,2 @@
 [console_scripts]
-PlasMAAG = workflow_PlasMAAG.__main__:main
+taxvamb_benchmark = workflow_PlasMAAG.__main__:main
