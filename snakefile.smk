@@ -91,7 +91,9 @@ mem_gb_fn  = lambda rulename: config.get(rulename, {"mem_gb": default_mem_gb}).g
 rulename = "all"
 rule all:
     input:
-        composition_vamb = expand(OUTDIR / "{key}/vamb_default/vae_clusters_unsplit.tsv", key=sample_id.keys()),
+        metadecoder = expand(OUTDIR / "{key}/metadecoder/clusters.metadecoder", key=sample_id.keys()),
+        metabat = expand(OUTDIR /  "{key}/metabat", key=sample_id.keys()),
+        # composition_vamb = expand(OUTDIR / "{key}/vamb_default/vae_clusters_unsplit.tsv", key=sample_id.keys()),
 
 
 #### Rules general for all tools ####
@@ -186,3 +188,5 @@ rule sort:
 
 ## Include the specific rules for each tool
 include: THIS_FILE_DIR / "snakemake_modules/vamb_default.smk"
+include: THIS_FILE_DIR / "snakemake_modules/metabat.smk"
+include: THIS_FILE_DIR / "snakemake_modules/metadecoder.smk"
