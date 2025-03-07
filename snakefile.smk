@@ -30,25 +30,8 @@ default_mem_gb = config.get("default_mem_gb", 50)
 # Minimum contig length used
 MIN_CONTIG_LEN = int(config.get("min_contig_len", 2000)) 
 
-# N2V parameters
-N2V_NZ= config.get("n2v_nz", "weight") 
-N2V_ED= config.get("n2v_ed", 32) 
-N2V_WL= config.get("n2v_wl", 10) 
-N2V_NW= config.get("n2v_nw", 50) 
-N2V_WS= config.get("n2v_ws", 10) 
-N2V_P= config.get("n2v_p", 0.1) 
-N2V_Q= config.get("n2v_q", 2.0) 
-
-# Binning parameters
-PLAMB_PARAMS = config.get("plamb_params", ' -o C ') 
-PLAMB_PRELOAD = config.get("plamb_preload", "") 
-
 # Other options
 CUDA = True if config.get("cuda") ==  "True" else False
-NEIGHS_R=config.get("neighs_r", '0.1') 
-MAX_INSERT_SIZE_CIRC = int(config.get("max_insert_size_circ", 50))
-GENOMAD_THR = config.get("genomad_thr", "0.75")
-GENOMAD_THR_CIRC = config.get("genomad_thr_circ", "0.5")
  
 ## ----------- ##
 
@@ -73,12 +56,9 @@ if config.get("read_file") != None:
     df = pd.read_csv(config["read_file"], sep=r"\s+", comment="#")
     sample_id = collections.defaultdict(list)
     sample_id_path = collections.defaultdict(dict)
-    for id, (read1, read2) in enumerate(zip(df.read1, df.read2)):
+    for id, (sample, read1, read2) in enumerate(zip(df["sample"], df.read1, df.read2)):
         id = f"sample{str(id)}"
-        # Earlier version of the pipeline could handle passing several samples at the same time which would be processed separatly.
-        # For easier user input this was removed. Therefore the "sample" is always set to the same. 
-        # By parsing different sample names from the input this can be implemented again - this is nice eg. for benchmarking
-        sample = "intermidiate_files" 
+        sample = sample
         sample_id[sample].append(id)
         sample_id_path[sample][id] = [read1, read2]
 
@@ -88,9 +68,9 @@ if config.get("read_assembly_dir") != None:
     sample_id = collections.defaultdict(list)
     sample_id_path = collections.defaultdict(dict)
     sample_id_path_assembly = collections.defaultdict(dict)
-    for id, (read1, read2, assembly) in enumerate(zip( df.read1, df.read2, df.assembly_dir)):
+    for id, (sample, read1, read2, assembly) in enumerate(zip( df["sample"], df.read1, df.read2, df.assembly_dir)):
         id = f"sample{str(id)}"
-        sample = "intermidiate_files"
+        sample = sample
         sample_id[sample].append(id)
         sample_id_path[sample][id] = [read1, read2]
         sample_id_path_assembly[sample][id] = [assembly]
@@ -108,33 +88,10 @@ threads_fn = lambda rulename: config.get(rulename, {"threads": default_threads})
 walltime_fn  = lambda rulename: config.get(rulename, {"walltime": default_walltime}).get("walltime", default_walltime) 
 mem_gb_fn  = lambda rulename: config.get(rulename, {"mem_gb": default_mem_gb}).get("mem_gb", default_mem_gb) 
 
-try: 
-    os.makedirs(os.path.join(OUTDIR,'log'), exist_ok=True)
-except FileExistsError:
-    pass
-
 rulename = "all"
 rule all:
     input:
-        candidate_plasmids = expand(os.path.join(OUTDIR,"{key}",'contrastive_VAE','vae_clusters_graph_thr_' + GENOMAD_THR + '_candidate_plasmids.tsv'),key=sample_id.keys()),
-        candidate_genomes = expand(os.path.join(OUTDIR,"{key}",'contrastive_VAE','vae_clusters_density_unsplit_geNomadplasclustercontigs_extracted_thr_' + GENOMAD_THR + '_thrcirc_' + GENOMAD_THR_CIRC + '.tsv'),key=sample_id.keys()), #
-        assert_genomad_finished = expand(os.path.join(OUTDIR,"{key}",'rule_completed_checks/run_geNomad.finished'), key=sample_id.keys()),
-        assert_vamb_finished = expand(os.path.join(OUTDIR, "{key}",'rule_completed_checks/run_contrastive_VAE.finished'), key=sample_id.keys()),
-        candidate_genomes_scores =expand(os.path.join(OUTDIR,"{key}",'contrastive_VAE','vae_clusters_density_unsplit_geNomadplasclustercontigs_extracted_thr_' + GENOMAD_THR + '_thrcirc_' + GENOMAD_THR_CIRC + '_gN_scores.tsv'), key=sample_id.keys()),
-        candidate_plasmids_scores = expand(os.path.join(OUTDIR,"{key}",'contrastive_VAE',f'vae_clusters_graph_thr_' + GENOMAD_THR + '_candidate_plasmids_gN_scores.tsv'), key=sample_id.keys()),
-    threads: threads_fn(rulename)
-    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
-    output:
-        candidate_plasmids = OUTDIR / "results/candidate_plasmids.tsv",
-        candidate_genomes = OUTDIR / "results/candidate_genomes.tsv",
-        combined_scores = OUTDIR / "results/scores.tsv",
-    shell: 
-        """
-        cat {input.candidate_plasmids} > {output.candidate_plasmids}
-        cat {input.candidate_genomes} > {output.candidate_genomes}
-        # Remove header from one of the files
-        tail -n+2  {input.candidate_genomes_scores} | cat {input.candidate_plasmids_scores} - > {output.combined_scores}
-        """
+        composition_vamb = expand(OUTDIR / "{key}/vamb_default/vae_clusters_unsplit.tsv", key=sample_id.keys()),
 
 
 # If only reads are passed run metaspades to assemble the reads
@@ -188,20 +145,6 @@ rule cat_contigs:
     shell: 
         "python {params.script} {output} {input} --keepnames -m {MIN_CONTIG_LEN} &> {log} "  
 
-# Extract the contigs names for later use
-rulename = "get_contig_names"
-rule get_contig_names:
-    input:
-        OUTDIR / "{key}/assembly_mapping_output/contigs.flt.fna.gz"
-    output: 
-        OUTDIR / "{key}/assembly_mapping_output/contigs.names.sorted"
-    threads: threads_fn(rulename)
-    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
-    benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
-    log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
-    shell:
-        "zcat {input} | grep '>' | sed 's/>//' > {output} 2> {log} "
-
 # Run strobealign to get the abundances  
 rulename = "Strobealign_bam_default"
 rule Strobealign_bam_default:
@@ -235,7 +178,7 @@ rule sort:
     shell:
         """
 	samtools sort --threads {threads} {input} -o {output} 2> {log}
-	samtools index {output} 2>> {log}
+	# samtools index {output} 2>> {log}
 	"""
 
 # Run vamb 

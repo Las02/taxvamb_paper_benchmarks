@@ -19,16 +19,16 @@ from workflow_PlasMAAG.richclick_options import *
 <Notice the header names are required to be: read1 and read2>
 This file could look like:
 ```
-read1                     read2
-path/to/sample_1/read1    path/to/sample_1/read2
-path/to/sample_2/read1    path/to/sample_2/read2
+sample  read1                     read2
+sample1  path/to/sample_1/read1    path/to/sample_1/read2
+sample1  path/to/sample_2/read1    path/to/sample_2/read2
 ```
 Passing in this file means that the pipeline will be run from the start, meaning it will also assemble the reads.
 
 """,
     type=WssFile(
-        expected_headers=["read1", "read2"],
-        none_file_columns=[],
+        expected_headers=["sample", "read1", "read2"],
+        none_file_columns=["sample"],
     ),
 )
 @click.option(
@@ -38,19 +38,21 @@ Passing in this file means that the pipeline will be run from the start, meaning
 <Notice the header names are required to be: read1, read2 and assembly_dir>
 This file could look like:  
 ```
-read1                  read2                  assembly_dir
-path/sample_1/read1    path/sample_1/read2    path/sample_1/Spades_dir
-path/sample_2/read1    path/sample_2/read2    path/sample_2/Spades_dir
+sample  read1                  read2                  assembly_dir
+sample1 path/sample_1/read1    path/sample_1/read2    path/sample_1/Spades_dir
+sample1 path/sample_2/read1    path/sample_2/read2    path/sample_2/Spades_dir
 ```
 Passing in this file means that the pipeline will not assemble the reads but run everything after the assembly step. 
         """,
     type=WssFile(
         expected_headers=[
+            "sample",
             "read1",
             "read2",
             "assembly_dir",
         ],
         spades_column="assembly_dir",
+        none_file_columns=["sample"],
     ),
 )
 @click.option(
@@ -109,9 +111,7 @@ def main(
     genomad_db,
 ):
     """
-    \bThis is a program to run the PlasMAAG Snakemake pipeline to bin plasmids from metagenomic reads.
-    The first time running the program it will try to install the genomad database (~3.1 G) and required scripts.
-    For running the pipeline either the --reads or the --reads_and_assembly_dir arguments are required.
+    \b For running the pipeline either the --reads or the --reads_and_assembly_dir arguments are required.
     Additionally, the --output argument is required which defines the output directory.
     For Quick Start please see the README: https://github.com/RasmussenLab/vamb/blob/vamb_n2v_asy/workflow_plamb/README.md
     """
@@ -120,15 +120,15 @@ def main(
         # Default is False
         CliRunner.dry_run_command = True
 
-    environment_manager = EnvironmentManager()
+    # environment_manager = EnvironmentManager()
 
-    if genomad_db is not None:
-        environment_manager._genomad_db_exist = True
-
-    # Set up the environment
-    if setup_env and not dryrun:
-        environment_manager.setup_environment()
-        sys.exit()
+    # if genomad_db is not None:
+    #     environment_manager._genomad_db_exist = True
+    #
+    # # Set up the environment
+    # if setup_env and not dryrun:
+    #     environment_manager.setup_environment()
+    #     sys.exit()
 
     if output is None:
         raise click.BadParameter(
@@ -145,9 +145,9 @@ def main(
             "Neither --reads_and_assembly and --reads are used, please define one of them",
         )
 
-    # Check if the environment is setup correctly, if not set it up
-    if not environment_manager.check_if_everything_is_setup() and not dryrun:
-        environment_manager.setup_environment()
+    # # Check if the environment is setup correctly, if not set it up
+    # if not environment_manager.check_if_everything_is_setup() and not dryrun:
+    #     environment_manager.setup_environment()
 
     snakemake_runner = SnakemakeRunner(snakefile="snakefile.smk")
     snakemake_runner.add_arguments(["-c", str(threads)])
