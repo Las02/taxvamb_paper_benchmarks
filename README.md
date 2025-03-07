@@ -7,12 +7,14 @@ Using the CLI wrapper is recommended as it also does some checks for correctness
 
 ## Reproducing the results using the CLI wrapper
 
-Clone the repository and install the package
+Clone the repository and install the package and snakemake
 ```
 git clone git@github.com:Las02/taxvamb_paper_benchmarks.git
 cd taxvamb_paper_benchmarks
 pip install -e .
+conda install -c bioconda snakemake
 ```
+
  To run the entire pipeline including assembly pass in a whitespace separated file containing the reads:
 ```
 taxvamb_benchmark --reads <read_file>  --output <output_directory>
