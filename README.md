@@ -1,5 +1,5 @@
 
-# Benchmarks Taxvamb paper 
+# Code for reproducing the benchmarks in the Taxvamb paper 
 Code for benchmarking Taxvamb against other binners.
 To reproduce the results a snakemake pipeline is available which can be run either from reads or from reads and assembled contigs:  
 The pipeline can be run either directly using snakemake or using a CLI wrapper around snakemake.  
