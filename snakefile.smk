@@ -94,6 +94,8 @@ rule all:
         composition_vamb = expand(OUTDIR / "{key}/vamb_default/vae_clusters_unsplit.tsv", key=sample_id.keys()),
 
 
+#### Rules general for all tools ####
+
 # If only reads are passed run metaspades to assemble the reads
 rulename = "spades"
 rule spades:
@@ -181,23 +183,6 @@ rule sort:
 	# samtools index {output} 2>> {log}
 	"""
 
-# Run vamb 
-rulename = "run_vamb"
-rule run_vamb:
-    input:
-        contigs = OUTDIR /  "{key}/assembly_mapping_output/contigs.flt.fna.gz",
-        bamfiles = lambda wildcards: expand(OUTDIR / "{key}/assembly_mapping_output/mapped_sorted/{id}.bam.sort", key=wildcards.key, id=sample_id[wildcards.key]),
-    output:
-        directory = directory(os.path.join(OUTDIR,"{key}", 'vamb_default')),
-        bins = os.path.join(OUTDIR,"{key}",'vamb_default','vae_clusters_unsplit.tsv'),
-        compo = os.path.join(OUTDIR, '{key}','vamb_default/composition.npz'),
-    threads: threads_fn(rulename)
-    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
-    benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
-    log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
-    shell:
-        """
-        rmdir {output.directory}
-        vamb bin contr_vamb --outdir {output.directory} --fasta {input.contigs} -p {threads} --bamfiles {input.bamfiles} \
-        -m {MIN_CONTIG_LEN} &> {log}
-        """
+
+## Include the specific rules for each tool
+include: THIS_FILE_DIR / "snakemake_modules/vamb_default.smk"
