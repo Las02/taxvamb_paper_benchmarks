@@ -1,5 +1,4 @@
 /snakemake_output/
-Makefile
 .snakemake/
 /genomad_db/
 /trash
