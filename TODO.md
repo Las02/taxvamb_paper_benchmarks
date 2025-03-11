@@ -1,6 +1,10 @@
 # TODO
+## Minimap2 for alignment
+
+
 ## Tools to benchmark
-### VAMB based tools
+
+### VAMB based tools : Taxvamb + vamb should be latest version.
 VAMB
 VAMB (reclustering)
 Metabuli (species) + TaxVAMB
@@ -49,3 +53,4 @@ Figure out how to change databases with kraken ::
   # Download and install MetaDecoder version 1.2.0 #
   pip3 install -U https://github.com/liu-congcong/MetaDecoder/releases/download/v1.2.0/metadecoder-1.2.0-py3-none-any.whl # new
   https://github.com/liu-congcong/MetaDecoder/releases/download/v1.0.19/metadecoder-1.0.19-py3-none-any.whl # our version
+
