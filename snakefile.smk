@@ -284,6 +284,7 @@ rule sort:
     resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
     benchmark: config.get("benchmark", "benchmark/") + "{key}_{id}_" + rulename
     log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_{id}_" + rulename
+    conda: THIS_FILE_DIR / "envs/samtools.yaml"
     shell:
         """
 	samtools sort --threads {threads} {input} -o {output} 2> {log}
