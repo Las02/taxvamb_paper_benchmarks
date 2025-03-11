@@ -1,0 +1,8 @@
+name: centrifuge
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - centrifuge==1.0.4-0
+
