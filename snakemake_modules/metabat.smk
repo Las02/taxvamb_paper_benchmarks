@@ -1,7 +1,7 @@
 rulename = "metabat"
 rule metabat:
     input:
-        contigs = OUTDIR /  "{key}/assembly_mapping_output/contigs.flt.fna.gz",
+        contigs = contigs_all,
         bamfiles = lambda wildcards: expand(OUTDIR / "{key}/assembly_mapping_output/mapped_sorted/{id}.bam.sort", key=wildcards.key, id=sample_id[wildcards.key]),
     output: 
         metabat = OUTDIR /  "{key}/metabat",

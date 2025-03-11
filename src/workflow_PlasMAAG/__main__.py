@@ -57,14 +57,14 @@ Passing in this file means that the pipeline will not assemble the reads but run
 )
 @click.option(
     "-b",
-    "--bam_assembly",
+    "--bam_contig",
     type=WssFile(
         expected_headers=[
             "sample",
             "bamfile",
-            "assembly_dir",
+            "contig",
         ],
-        spades_column="assembly_dir",
+        # spades_column="assembly_dir",
         none_file_columns=["sample"],
     ),
 )
@@ -122,7 +122,7 @@ def main(
     cli_dryrun,
     snakemake_arguments,
     genomad_db,
-    bam_assembly,
+    bam_contig,
 ):
     """
     \b For running the pipeline either the --reads or the --reads_and_assembly_dir arguments are required.
@@ -152,13 +152,13 @@ def main(
     if (
         reads_and_assembly_dir is not None
         and reads is not None
-        and bam_assembly is not None
+        and bam_contig is not None
     ):
         raise click.BadParameter(
             "Both --reads_and_assembly and --reads are used, only use one of them",
         )
 
-    if reads_and_assembly_dir is None and reads is None and bam_assembly is None:
+    if reads_and_assembly_dir is None and reads is None and bam_contig is None:
         raise click.BadParameter(
             "Neither --reads_and_assembly and --reads are used, please define one of them",
         )
@@ -190,8 +190,8 @@ def main(
         snakemake_runner.to_print_while_running_snakemake = f"Running snakemake with {threads} thread(s), from paired reads and assembly graph"
 
     # Run the pipeline from the bamfiles and the assembly graphs
-    if bam_assembly is not None:
-        snakemake_runner.add_to_config(f"bam_assembly={bam_assembly}")
+    if bam_contig is not None:
+        snakemake_runner.add_to_config(f"bam_contig={bam_contig}")
         snakemake_runner.to_print_while_running_snakemake = (
             f"Running snakemake with {threads} thread(s), from bamfiles and assembly"
         )

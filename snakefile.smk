@@ -37,8 +37,8 @@ CUDA = True if config.get("cuda") ==  "True" else False
 ## ----------- ##
 
 # Assert that input files are actually passed to snakemake
-if config.get("read_file") == None and config.get("read_assembly_dir") == None and config.get("bam_assembly") == None:
-    print("ERROR: read_file or read_assembly_dir not passed to snakemake as config. Define either. Eg. snakemake <arguments> --config read_file=<read file>. If in doubt refer to the README.md file")
+if config.get("read_file") == None and config.get("read_assembly_dir") == None and config.get("bam_contig") == None:
+    print("ERROR: read_file or read_assembly_dir or bam_contig not passed to snakemake as config. Define either. Eg. snakemake <arguments> --config read_file=<read file>. If in doubt refer to the README.md file")
     sys.exit()
 
 # Set default paths for the SPades outputfiles - running the pipeline from allready assembled reads overwrite these values
@@ -49,12 +49,15 @@ assembly_graph = OUTDIR / "{key}/assembly_mapping_output/spades_{id}/assembly_gr
 # Default paths for bamfiles 
 bamfiles_before = OUTDIR / "{key}/assembly_mapping_output/mapped/{id}.bam"
 bamfiles = OUTDIR / "{key}/assembly_mapping_output/mapped/{id}.bam"
+contigs_all = OUTDIR / "{key}/assembly_mapping_output/contigs.flt.fna.gz"
+
 
 # Set default values for dictonaries containg information about the input information
 # The way snakemake parses snakefiles means we have to define them even though they will always be present
 sample_id = dict()               
 sample_id_path= dict() 
 sample_id_path_assembly = dict()
+sample_id_contig = collections.defaultdict()
 
 read_fw = ""
 read_rv = ""
@@ -92,22 +95,28 @@ if config.get("read_assembly_dir") != None:
     read_fw = lambda wildcards: sample_id_path[wildcards.key][wildcards.id][0]
     read_rv =  lambda wildcards: sample_id_path[wildcards.key][wildcards.id][1]
 
-if config.get("bam_assembly") != None:
-    df = pd.read_csv(config["bam_assembly"], sep=r"\s+", comment="#")
+if config.get("bam_contig") != None:
+    df = pd.read_csv(config["bam_contig"], sep=r"\s+", comment="#")
     sample_id = collections.defaultdict(list)
     sample_id_path = collections.defaultdict(dict)
-    sample_id_path_assembly = collections.defaultdict(dict)
-    for id, (sample, bamfile, assembly) in enumerate(zip(df["sample"], df.bamfile, df.assembly_dir)):
+    contigs = collections.defaultdict(list)
+    for id, (sample, bamfile, contig) in enumerate(zip(df["sample"], df.bamfile, df.contig)):
         id = f"sample{str(id)}"
         sample = sample
         sample_id[sample].append(id)
         sample_id_path[sample][id] = [bamfile]
-        sample_id_path_assembly[sample][id] = [assembly]
-        # Setting the output paths for the user defined SPades files
-        contigs =  lambda wildcards: Path(sample_id_path_assembly[wildcards.key][wildcards.id][0]) / "contigs.fasta"
-        assembly_graph  =  lambda wildcards: Path(sample_id_path_assembly[wildcards.key][wildcards.id][0]) / "assembly_graph_after_simplification.gfa"
-        contigs_paths  =  lambda wildcards: Path(sample_id_path_assembly[wildcards.key][wildcards.id][0]) / "contigs.paths"
+        sample_id_contig[sample] = contig
+        contigs[sample].append(contig)
         bamfiles = lambda wildcards: sample_id_path[wildcards.key][wildcards.id][0]
+        contigs_all = lambda wildcards: sample_id_contig[wildcards.key]
+
+    # Check that all contigs are the same for each sample
+    for sample in contigs.keys():
+        for contig in contigs[sample]:
+            if contigs[sample][0] != contig:
+                print("Not all contigs are the same")
+                sys.exit()
+            
 
 
 # Functions to get the config-defined threads/walltime/mem_gb for a rule and if not defined the default
