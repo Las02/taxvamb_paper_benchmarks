@@ -56,6 +56,19 @@ Passing in this file means that the pipeline will not assemble the reads but run
     ),
 )
 @click.option(
+    "-b",
+    "--bam_assembly",
+    type=WssFile(
+        expected_headers=[
+            "sample",
+            "bamfile",
+            "assembly_dir",
+        ],
+        spades_column="assembly_dir",
+        none_file_columns=["sample"],
+    ),
+)
+@click.option(
     "-t",
     "--threads",
     help="Number of threads to run the application with",
@@ -109,6 +122,7 @@ def main(
     cli_dryrun,
     snakemake_arguments,
     genomad_db,
+    bam_assembly,
 ):
     """
     \b For running the pipeline either the --reads or the --reads_and_assembly_dir arguments are required.
@@ -135,12 +149,16 @@ def main(
             "--output is required",
         )
 
-    if reads_and_assembly_dir is not None and reads is not None:
+    if (
+        reads_and_assembly_dir is not None
+        and reads is not None
+        and bam_assembly is not None
+    ):
         raise click.BadParameter(
             "Both --reads_and_assembly and --reads are used, only use one of them",
         )
 
-    if reads_and_assembly_dir is None and reads is None:
+    if reads_and_assembly_dir is None and reads is None and bam_assembly is None:
         raise click.BadParameter(
             "Neither --reads_and_assembly and --reads are used, please define one of them",
         )
@@ -151,10 +169,6 @@ def main(
 
     snakemake_runner = SnakemakeRunner(snakefile="snakefile.smk")
     snakemake_runner.add_arguments(["-c", str(threads)])
-
-    if genomad_db is not None:
-        logger.info(f"Setting genomad database path to {genomad_db}")
-        snakemake_runner.add_to_config(f"genomad_database={genomad_db}")
 
     if snakemake_arguments is not None:
         logger.info(f"Expanding snakemake arguments with: {snakemake_arguments}")
@@ -174,6 +188,13 @@ def main(
     if reads_and_assembly_dir is not None:
         snakemake_runner.add_to_config(f"read_assembly_dir={reads_and_assembly_dir}")
         snakemake_runner.to_print_while_running_snakemake = f"Running snakemake with {threads} thread(s), from paired reads and assembly graph"
+
+    # Run the pipeline from the bamfiles and the assembly graphs
+    if bam_assembly is not None:
+        snakemake_runner.add_to_config(f"bam_assembly={bam_assembly}")
+        snakemake_runner.to_print_while_running_snakemake = (
+            f"Running snakemake with {threads} thread(s), from bamfiles and assembly"
+        )
 
     if dryrun:
         snakemake_runner.add_arguments(["-n"])

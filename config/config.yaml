@@ -1,6 +1,9 @@
 # Use cuda for the vamb part of the pipeline. Uncomment to use cuda
 # cuda: "True"
 
+# Use minimap - if False uses strobealign
+use_minimap: False
+
 ## Default resources
 # This is the default resources used by the different rules
 # If no specific resources are defined for a rule, these will be used.
