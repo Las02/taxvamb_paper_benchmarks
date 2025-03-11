@@ -127,6 +127,7 @@ mem_gb_fn  = lambda rulename: config.get(rulename, {"mem_gb": default_mem_gb}).g
 rulename = "all"
 rule all:
     input:
+        semibin = expand(OUTDIR /  "{key}/semibin", key=sample_id.keys()),
         metadecoder = expand(OUTDIR / "{key}/metadecoder/clusters.metadecoder", key=sample_id.keys()),
         metabat = expand(OUTDIR /  "{key}/metabat", key=sample_id.keys()),
         comebin = expand(OUTDIR /  "{key}/comebin", key=sample_id.keys()),
@@ -284,6 +285,7 @@ rule sort:
     resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
     benchmark: config.get("benchmark", "benchmark/") + "{key}_{id}_" + rulename
     log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_{id}_" + rulename
+    conda: THIS_FILE_DIR / "envs/samtools.yaml"
     shell:
         """
 	samtools sort --threads {threads} {input} -o {output} 2> {log}
@@ -296,3 +298,5 @@ include: THIS_FILE_DIR / "snakemake_modules/vamb_default.smk"
 include: THIS_FILE_DIR / "snakemake_modules/metabat.smk"
 include: THIS_FILE_DIR / "snakemake_modules/comebin.smk"
 include: THIS_FILE_DIR / "snakemake_modules/metadecoder.smk"
+include: THIS_FILE_DIR / "snakemake_modules/semibin.smk"
+include: THIS_FILE_DIR / "snakemake_modules/taxonomy_classifiers.smk"

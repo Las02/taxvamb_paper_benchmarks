@@ -31,7 +31,7 @@ rule metadecoder:
     shell:
         """
         # Calculate coverage
-        metadecoder coverage -s {input.samfiles} -o {output.coverage_file}
+        metadecoder coverage --threads {threads} -s {input.samfiles} -o {output.coverage_file}
 
         # Decompress fastafile 
         gzip --decompress {input.contigs} > {output.contigs_decompressed}
@@ -40,6 +40,6 @@ rule metadecoder:
         metadecoder seed --threads {threads} -f {output.contigs_decompressed} -o {output.seed}
 
         # Actually cluster 
-        metadecoder cluster -f {output.contigs_decompressed} -c {output.coverage_file} -s {output.seed} -o {output.metadecoder}
+        metadecoder cluster --threads {threads} -f {output.contigs_decompressed} -c {output.coverage_file} -s {output.seed} -o {output.metadecoder}
         """
 # NOTE: Likely needs sam files as input >(

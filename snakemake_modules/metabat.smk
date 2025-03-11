@@ -12,8 +12,7 @@ rule metabat:
     container: "docker://metabat/metabat:v2.17-66-ga512006"
     shell:
         """
-        # metabat2 -h &> {output}
-        metabat2 --inFile {contigs} --outFile {output.metabat} {input.bamfiles} &> {log}
+        metabat2 -t {threads} --inFile {input.contigs} --outFile {output.metabat} {input.bamfiles} &> {log}
         """
 
 # MetaBAT: Metagenome Binning based on Abundance and Tetranucleotide frequency (version 2:2.17.66-ga512006-dirty; 20250124_080221)

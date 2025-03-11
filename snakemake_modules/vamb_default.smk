@@ -16,6 +16,6 @@ rule run_vamb:
     shell:
         """
         rmdir {output.directory}
-        vamb bin contr_vamb --outdir {output.directory} --fasta {input.contigs} -p {threads} --bamfiles {input.bamfiles} \
+        vamb bin default --outdir {output.directory} --fasta {input.contigs} -p {threads} --bamfiles {input.bamfiles} \
         -m {MIN_CONTIG_LEN} &> {log}
         """
