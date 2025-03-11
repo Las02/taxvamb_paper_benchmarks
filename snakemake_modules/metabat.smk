@@ -7,8 +7,8 @@ rule metabat:
         metabat = OUTDIR /  "{key}/metabat",
     threads: threads_fn(rulename)
     resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
-    # benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
-    # log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
+    benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
+    log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
     container: "docker://metabat/metabat:v2.17-66-ga512006"
     shell:
         """

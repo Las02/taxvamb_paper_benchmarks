@@ -129,7 +129,8 @@ rule all:
     input:
         metadecoder = expand(OUTDIR / "{key}/metadecoder/clusters.metadecoder", key=sample_id.keys()),
         metabat = expand(OUTDIR /  "{key}/metabat", key=sample_id.keys()),
-        # composition_vamb = expand(OUTDIR / "{key}/vamb_default/vae_clusters_unsplit.tsv", key=sample_id.keys()),
+        comebin = expand(OUTDIR /  "{key}/comebin", key=sample_id.keys()),
+        vamb_default = expand( OUTDIR / "{key}" / 'vamb_default' / 'vae_clusters_unsplit.tsv', key=sample_id.keys()),
 
 #### Rules general for all tools ####
 
@@ -181,6 +182,7 @@ rule cat_contigs:
     resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
     benchmark: config.get("benchmark", "benchmark/") + "{key}" + rulename
     log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
+    conda: THIS_FILE_DIR / "envs/vamb.yaml"
     shell: 
         "python {params.script} {output} {input} --keepnames -m {MIN_CONTIG_LEN} &> {log} "  
 
@@ -292,4 +294,5 @@ rule sort:
 ## Include the specific rules for each tool
 include: THIS_FILE_DIR / "snakemake_modules/vamb_default.smk"
 include: THIS_FILE_DIR / "snakemake_modules/metabat.smk"
+include: THIS_FILE_DIR / "snakemake_modules/comebin.smk"
 include: THIS_FILE_DIR / "snakemake_modules/metadecoder.smk"

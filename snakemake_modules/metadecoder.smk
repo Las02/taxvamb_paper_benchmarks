@@ -14,7 +14,6 @@ rule bam_to_sam:
         samtools view -h {input.bamfile} > {output.samfile} 2> {log}
         """
 
-print(contigs_all)
 rule metadecoder:
     input:
         contigs = contigs_all,

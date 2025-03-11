@@ -2,7 +2,7 @@
 # cuda: "True"
 
 # Use minimap - if False uses strobealign
-use_minimap: False
+use_minimap: True
 
 ## Default resources
 # This is the default resources used by the different rules
