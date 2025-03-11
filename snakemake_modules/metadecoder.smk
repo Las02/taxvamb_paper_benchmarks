@@ -16,7 +16,7 @@ rule bam_to_sam:
 
 rule metadecoder:
     input:
-        contigs = OUTDIR /  "{key}/assembly_mapping_output/contigs.flt.fna.gz",
+        contigs = contigs_all,
         samfiles = lambda wildcards: expand(OUTDIR / "{key}/assembly_mapping_output/mapped_sorted/{id}.sam.sort", key=wildcards.key, id=sample_id[wildcards.key]),
     output:
         coverage_file = OUTDIR /  "{key}/metadecoder/coverage_file.coverage",

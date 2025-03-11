@@ -1,14 +1,14 @@
 rulename = "metabat"
 rule metabat:
     input:
-        contigs = OUTDIR /  "{key}/assembly_mapping_output/contigs.flt.fna.gz",
+        contigs = contigs_all,
         bamfiles = lambda wildcards: expand(OUTDIR / "{key}/assembly_mapping_output/mapped_sorted/{id}.bam.sort", key=wildcards.key, id=sample_id[wildcards.key]),
     output: 
         metabat = OUTDIR /  "{key}/metabat",
     threads: threads_fn(rulename)
     resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
-    # benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
-    # log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
+    benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
+    log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
     container: "docker://metabat/metabat:v2.17-66-ga512006"
     shell:
         """

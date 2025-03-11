@@ -11,7 +11,7 @@ Clone the repository and install the package and snakemake
 ```
 git clone git@github.com:Las02/taxvamb_paper_benchmarks.git
 cd taxvamb_paper_benchmarks
-pip install -e .
+uv pip install -e .
 mamba install -c bioconda snakemake
 mamba install -c conda-forge apptainer
 

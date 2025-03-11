@@ -1,6 +1,14 @@
+# Questions
+Minimap2: By using -F 3584, you are excluding reads that have any of these flags set. In other words, you are keeping only reads that are not supplementary, not duplicates, and not failing QC.
+Read QC ? 
+
 # TODO
+## Minimap2 for alignment
+
+
 ## Tools to benchmark
-### VAMB based tools
+
+### VAMB based tools : Taxvamb + vamb should be latest version.
 VAMB
 VAMB (reclustering)
 Metabuli (species) + TaxVAMB
@@ -18,8 +26,8 @@ MMSeqs+TaxVAMB (reclustered)
 #### Not tested: as snakemake
 Metabat : Works with docker img : # NOTE: we are using earlier version than in paper
 Metadecoder: V: 1.0.19 as in paper: 
+Comebin :  Comebin (v.1.0.3)
 #### Not done anything with
-Comebin : 
 Metabuli
 SemiBin (NO reclustering)
 SemiBin (WITH reclustering)
@@ -49,3 +57,7 @@ Figure out how to change databases with kraken ::
   # Download and install MetaDecoder version 1.2.0 #
   pip3 install -U https://github.com/liu-congcong/MetaDecoder/releases/download/v1.2.0/metadecoder-1.2.0-py3-none-any.whl # new
   https://github.com/liu-congcong/MetaDecoder/releases/download/v1.0.19/metadecoder-1.0.19-py3-none-any.whl # our version
+
+# Testing TaxVAMB:
+  @Lasse Schnell Danielsen
+   maybe a good place to start is then to re-run TaxVamb from v 5.0.1 versus TaxVamb from commit 5f2cd7 on CAM

@@ -2,7 +2,7 @@
 rulename = "run_vamb"
 rule run_vamb:
     input:
-        contigs = OUTDIR /  "{key}/assembly_mapping_output/contigs.flt.fna.gz",
+        contigs = contigs_all,
         bamfiles = lambda wildcards: expand(OUTDIR / "{key}/assembly_mapping_output/mapped_sorted/{id}.bam.sort", key=wildcards.key, id=sample_id[wildcards.key]),
     output:
         directory = directory(os.path.join(OUTDIR,"{key}", 'vamb_default')),
@@ -12,6 +12,7 @@ rule run_vamb:
     resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
     benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
     log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
+    conda: THIS_FILE_DIR / "envs/vamb.yaml"
     shell:
         """
         rmdir {output.directory}
