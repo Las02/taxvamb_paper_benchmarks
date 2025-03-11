@@ -1,3 +1,7 @@
+# Questions
+Minimap2: By using -F 3584, you are excluding reads that have any of these flags set. In other words, you are keeping only reads that are not supplementary, not duplicates, and not failing QC.
+Read QC ? 
+
 # TODO
 ## Minimap2 for alignment
 

@@ -149,24 +149,88 @@ rule cat_contigs:
     shell: 
         "python {params.script} {output} {input} --keepnames -m {MIN_CONTIG_LEN} &> {log} "  
 
-# Run strobealign to get the abundances  
-rulename = "Strobealign_bam_default"
-rule Strobealign_bam_default:
-        input: 
-            fw = read_fw,
-            rv = read_rv,
-            contig = OUTDIR /"{key}/assembly_mapping_output/contigs.flt.fna.gz",
-        output:
-            OUTDIR / "{key}/assembly_mapping_output/mapped/{id}.bam"
-        threads: threads_fn(rulename)
-        resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
-        benchmark: config.get("benchmark", "benchmark/") + "{key}_{id}_" + rulename
-        log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_{id}_" + rulename
-        conda: THIS_FILE_DIR / "envs/strobe_env.yaml"
-        shell:
-            """
-            strobealign -t {threads} {input.contig} {input.fw} {input.rv} > {output} 2> {log}
-            """
+# # Run strobealign to get the abundances  
+# rulename = "Strobealign_bam_default"
+# rule Strobealign_bam_default:
+#         input: 
+#             fw = read_fw,
+#             rv = read_rv,
+#             contig = OUTDIR /"{key}/assembly_mapping_output/contigs.flt.fna.gz",
+#         output:
+#             OUTDIR / "{key}/assembly_mapping_output/mapped/{id}.bam"
+#         threads: threads_fn(rulename)
+#         resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+#         benchmark: config.get("benchmark", "benchmark/") + "{key}_{id}_" + rulename
+#         log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_{id}_" + rulename
+#         conda: THIS_FILE_DIR / "envs/strobe_env.yaml"
+#         shell:
+#             """
+#             strobealign -t {threads} {input.contig} {input.fw} {input.rv} > {output} 2> {log}
+#             """
+
+INDEX_SIZE = "12G" # get_config("index_size", "12G", r"[1-9]\d*[GM]$")
+# Index resulting contig-file with minimap2
+rule index:
+    input:
+        # contigs = os.path.join(OUTDIR,"contigs.flt.fna.gz")
+        contigs = OUTDIR /"{key}/assembly_mapping_output/contigs.flt.fna.gz",
+    output:
+        mmi = os.path.join(OUTDIR, "{key}", "contigs.flt.mmi")
+    threads: threads_fn(rulename)
+    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+    benchmark: config.get("benchmark", "benchmark/") + "{key}_{id}_" + rulename
+    log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_{id}_" + rulename
+    conda: 
+        THIS_FILE_DIR / "envs/minimap2.yaml"
+    shell:
+        "minimap2 -I {INDEX_SIZE} -d {output} {input} 2> {log}"
+
+# This rule creates a SAM header from a FASTA file.
+# We need it because minimap2 for truly unknowable reasons will write
+# SAM headers INTERSPERSED in the output SAM file, making it unparseable.
+# To work around this mind-boggling bug, we remove all header lines from
+# minimap2's SAM output by grepping, then re-add the header created in this
+# rule.
+rule dict:
+    input:
+        # contigs = os.path.join(OUTDIR,"contigs.flt.fna.gz")
+        contigs = OUTDIR /"{key}/assembly_mapping_output/contigs.flt.fna.gz",
+    output:
+        dict = os.path.join(OUTDIR,"{key}", "contigs.flt.dict")  
+    threads: threads_fn(rulename)
+    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+    benchmark: config.get("benchmark", "benchmark/") + "{key}_{id}_" + rulename
+    log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_{id}_" + rulename
+    conda:
+        THIS_FILE_DIR / "envs/samtools.yaml"
+    shell:
+        "samtools dict {input} | cut -f1-3 > {output} 2> {log}"
+
+# Generate bam files 
+rule minimap:
+    input:
+        fw = read_fw,
+        rv = read_rv,
+        mmi = os.path.join(OUTDIR, "{key}", "contigs.flt.mmi")
+        dict = os.path.join(OUTDIR,"{key}", "contigs.flt.dict"),
+        # fq = lambda wildcards: sample2path[wildcards.sample],
+        # mmi = os.path.join(OUTDIR,"contigs.flt.mmi"),
+        # dict = os.path.join(OUTDIR,"contigs.flt.dict")
+    output:
+        bam = OUTDIR / "{key}/assembly_mapping_output/mapped/{id}.bam"
+        # bam = temp(os.path.join(OUTDIR,"mapped/{sample}.bam"))
+    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+    benchmark: config.get("benchmark", "benchmark/") + "{key}_{id}_" + rulename
+    log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_{id}_" + rulename
+    conda:
+        THIS_FILE_DIR / "envs/minimap2.yaml"
+    shell:
+        # See comment over rule "dict" to understand what happens here
+        "minimap2 -t {threads} -ax sr {input.mmi} {input.fw} {input.rv} -N 5"
+        " | grep -v '^@'"
+        " | cat {input.dict} - "
+        " | samtools view -F 3584 -b - " # supplementary, duplicate read, fail QC check
+        " > {output.bam} 2> {log}"
 
 # Sort the bam files and index them
 rulename="sort"
