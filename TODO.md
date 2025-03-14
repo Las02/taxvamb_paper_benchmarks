@@ -22,6 +22,8 @@ Centrifuge, Kraken2 and MetaMaps were configured to use NCBI identifiers.
 - Kraken2: https://github.com/DerrickWood/kraken2
 For Kraken2, we used the kraken command with –minimum-hit-groups 3 flag. 
 Centrifuge, Kraken2 and MetaMaps were configured to use NCBI identifiers. 
+
+# Not conda
 - MMSeqs2 : version not on conda
 For MMseqs2, we used the mmseqs taxonomy command. 
 MMseqs2 and Metabuli were configured to use GTDB v207 as the reference database. 

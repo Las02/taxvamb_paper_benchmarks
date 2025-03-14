@@ -132,6 +132,9 @@ rule all:
         metabat = expand(OUTDIR /  "{key}/metabat", key=sample_id.keys()),
         comebin = expand(OUTDIR /  "{key}/comebin", key=sample_id.keys()),
         vamb_default = expand( OUTDIR / "{key}" / 'vamb_default' / 'vae_clusters_unsplit.tsv', key=sample_id.keys()),
+        metabuli=   expand( OUTDIR /  "{key}/classifiers/metabuli",    key=sample_id.keys()),
+        kraken2 =  expand( OUTDIR /  "{key}/classifiers/kraken2",          key=sample_id.keys()),     
+        centrifuge = expand(OUTDIR /  "{key}/classifiers/centrifuge",           key=sample_id.keys()),
 
 #### Rules general for all tools ####
 
