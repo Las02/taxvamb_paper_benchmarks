@@ -1,7 +1,7 @@
-name: centrifuge
+name: mmseqs2 
 channels:
   - conda-forge
   - bioconda
   - defaults
 dependencies:
-  - centrifuge==1.0.4.2-1
+  - mmseqs2==17.b804f-1

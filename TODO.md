@@ -90,4 +90,5 @@ Figure out how to change databases with kraken ::
 
 # fejl i paper
 mentions MetaMaps: 482
+-segmode 1 written, should be --segmode 1
 
