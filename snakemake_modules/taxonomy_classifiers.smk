@@ -41,46 +41,46 @@ rule metabuli:
 #    --accession-level : Set 1 to use accession level classification (0 by default). 
 #                        It is available when the DB is also built with accession level taxonomy.
 
-rulename = "mmseqs2"
-rule mmseqs2:
-    output:
-        mmseqs2 = OUTDIR /  "{key}/classifiers/mmseqs2",
-    threads: threads_fn(rulename)
-    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
-    benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
-    log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
-    conda: THIS_FILE_DIR / "envs/mmseqs2.yaml"
-    shell:
-        """
-        echo
-        """
-
-rulename = "centrifuge"
-rule centrifuge:
-    output:
-        centrifuge = OUTDIR /  "{key}/classifiers/centrifuge",
-    threads: threads_fn(rulename)
-    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
-    benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
-    log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
-    conda: THIS_FILE_DIR / "envs/centrifuge.yaml"
-    shell:
-        """
-        
-        -k 1
-        """
-
-rulename = "kraken2"
-rule kraken2:
-    output:
-        kraken2 = OUTDIR /  "{key}/classifiers/kraken2",
-    threads: threads_fn(rulename)
-    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
-    benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
-    log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
-    conda: THIS_FILE_DIR / "envs/kraken2.yaml"
-    shell:
-        """
-        echo
-        """
-
+# rulename = "mmseqs2"
+# rule mmseqs2:
+#     output:
+#         mmseqs2 = OUTDIR /  "{key}/classifiers/mmseqs2",
+#     threads: threads_fn(rulename)
+#     resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+#     benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
+#     log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
+#     conda: THIS_FILE_DIR / "envs/mmseqs2.yaml"
+#     shell:
+#         """
+#         echo
+#         """
+#
+# rulename = "centrifuge"
+# rule centrifuge:
+#     output:
+#         centrifuge = OUTDIR /  "{key}/classifiers/centrifuge",
+#     threads: threads_fn(rulename)
+#     resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+#     benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
+#     log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
+#     conda: THIS_FILE_DIR / "envs/centrifuge.yaml"
+#     shell:
+#         """
+#
+#         -k 1
+#         """
+#
+# rulename = "kraken2"
+# rule kraken2:
+#     output:
+#         kraken2 = OUTDIR /  "{key}/classifiers/kraken2",
+#     threads: threads_fn(rulename)
+#     resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+#     benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
+#     log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
+#     conda: THIS_FILE_DIR / "envs/kraken2.yaml"
+#     shell:
+#         """
+#         echo
+#         """
+#
