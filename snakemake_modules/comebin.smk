@@ -4,6 +4,7 @@ rule comebin:
     input:
         contigs = contigs_all,
         bamfiles = lambda wildcards: expand(OUTDIR / "{key}/assembly_mapping_output/mapped_sorted/{id}.bam.sort", key=wildcards.key, id=sample_id[wildcards.key]),
+        contigs_decompressed = OUTDIR /  "{key}/metadecoder/contigs.flt.fna",
     output: 
         comebin = OUTDIR /  "{key}/comebin",
     threads: threads_fn(rulename)
@@ -13,7 +14,7 @@ rule comebin:
     conda: THIS_FILE_DIR / "envs/comebin.yaml"
     shell:
         """
-        run_comebin.sh -a {input.contigs} \
+        run_comebin.sh -a {input.contigs_decompressed} \
         -o {output.comebin} \
         -p {input.bamfiles} \
         -t {threads} &> {log}

@@ -1,20 +1,44 @@
+# Contigs are given outside of the scope of the output directory
+# metabat usest singularity which mounts only the output directory
+# we therefore need to copy the contigs inside the output directory to be mounted properbly
+rulename = "tmp_copy"
+rule tmp_copy:
+    input:
+        contigs = contigs_all,
+    output: 
+        tmp_contigs = temp("{key}/contigs.fasta.gz"),
+    threads: threads_fn(rulename)
+    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+    shell:
+        """
+        cp {input.contigs} {output.tmp_contigs}
+        """
+
 rulename = "metabat"
 rule metabat:
     input:
-        contigs = contigs_all,
+        contigs = temp("{key}/contigs.fasta.gz"),
         bamfiles = lambda wildcards: expand(OUTDIR / "{key}/assembly_mapping_output/mapped_sorted/{id}.bam.sort", key=wildcards.key, id=sample_id[wildcards.key]),
     output: 
-        metabat = OUTDIR /  "{key}/metabat",
+        depht = OUTDIR /  "{key}/metabat/depht.txt",
+        metabat = directory(OUTDIR /  "{key}/metabat/metabat"),
     threads: threads_fn(rulename)
+    params:
     resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
     benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
     log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
     container: "docker://metabat/metabat:v2.17-66-ga512006"
     shell:
         """
-        metabat2 -t {threads} --inFile {input.contigs} --outFile {output.metabat} {input.bamfiles} &> {log}
+        jgi_summarize_bam_contig_depths --outputDepth {output.depht} {input.bamfiles}
+        mkdir -p {output.metabat}
+        metabat2 -i {input.contigs} -a {output.depht} -o {output.metabat}/bin
         """
 
+#     (base) [bxc755@esrumcmpn05fl taxvamb_benchmarks]$ /maps/projects/rasmussen/people/bxc755/conda_env/conda/bin/snakemake --snakefile /maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/taxvamb_paper_benchmarks/snakefile.smk --rerun-triggers mtime --nolock -c 40 -p --keep-going --software-deployment-method apptainer --use-conda --rerun-incomplete --keep-incomplete --config bam_contig=../taxvamb_paper_benchmarks/data_configs/esrum_airways_bamfile_contigs.tsv output_directory=airways --direct ory airways
+
+    # metabat2 --help
+    # runMetaBat.sh --numThreads {threads} --inFile {input.contigs} --outFile {output.metabat} {input.bamfiles} 
 # MetaBAT: Metagenome Binning based on Abundance and Tetranucleotide frequency (version 2:2.17.66-ga512006-dirty; 20250124_080221)
 # by Don Kang (ddkang@lbl.gov), Feng Li, Jeff Froula, Rob Egan, and Zhong Wang (zhongwang@lbl.gov)
 #

@@ -5,7 +5,7 @@ rule metabuli:
     output:
         metabuli= OUTDIR /  "{key}/classifiers/metabuli",
     params: 
-        database = "."
+        database = config.get("database")
     threads: threads_fn(rulename)
     resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
     benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
@@ -41,19 +41,19 @@ rule metabuli:
 #    --accession-level : Set 1 to use accession level classification (0 by default). 
 #                        It is available when the DB is also built with accession level taxonomy.
 
-# rulename = "mmseqs2"
-# rule mmseqs2:
-#     output:
-#         mmseqs2 = OUTDIR /  "{key}/classifiers/mmseqs2",
-#     threads: threads_fn(rulename)
-#     resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
-#     benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
-#     log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
-#     conda: THIS_FILE_DIR / "envs/mmseqs2.yaml"
-#     shell:
-#         """
-#         echo
-#         """
+rulename = "mmseqs2"
+rule mmseqs2:
+    output:
+        mmseqs2 = OUTDIR /  "{key}/classifiers/mmseqs2",
+    threads: threads_fn(rulename)
+    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+    benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
+    log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
+    conda: THIS_FILE_DIR / "envs/mmseqs2.yaml"
+    shell:
+        """
+        mmseqs databases
+        """
 #
 # rulename = "centrifuge"
 # rule centrifuge:

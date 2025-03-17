@@ -14,14 +14,26 @@ rule bam_to_sam:
         samtools view -h {input.bamfile} > {output.samfile} 2> {log}
         """
 
-rule metadecoder:
+rule decompress_fastafile:
     input:
         contigs = contigs_all,
+    output:
+        contigs_decompressed = OUTDIR /  "{key}/metadecoder/contigs.flt.fna",
+    shell:
+        """
+        # Decompress fastafile 
+        gzip --decompress -c {input.contigs} > {output.contigs_decompressed}
+        echo decompression done
+        """
+
+rule metadecoder:
+    input:
         samfiles = lambda wildcards: expand(OUTDIR / "{key}/assembly_mapping_output/mapped_sorted/{id}.sam.sort", key=wildcards.key, id=sample_id[wildcards.key]),
+        contigs_decompressed = OUTDIR /  "{key}/metadecoder/contigs.flt.fna",
     output:
         coverage_file = OUTDIR /  "{key}/metadecoder/coverage_file.coverage",
-        contigs_decompressed = OUTDIR /  "{key}/metadecoder/contigs.flt.fna",
         seed = OUTDIR /  "{key}/metadecoder/seed.seed",
+    params:
         metadecoder = OUTDIR /  "{key}/metadecoder/clusters.metadecoder",
     threads: threads_fn(rulename)
     resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
@@ -32,14 +44,13 @@ rule metadecoder:
         """
         # Calculate coverage
         metadecoder coverage --threads {threads} -s {input.samfiles} -o {output.coverage_file}
+        echo metadecoder coverage done
 
-        # Decompress fastafile 
-        gzip --decompress {input.contigs} > {output.contigs_decompressed}
-
-        # Get seed
-        metadecoder seed --threads {threads} -f {output.contigs_decompressed} -o {output.seed}
+        # # Get seed
+        metadecoder seed --threads {threads} -f {input.contigs_decompressed} -o {output.seed}
+        echo metadecoder seed done
 
         # Actually cluster 
-        metadecoder cluster --threads {threads} -f {output.contigs_decompressed} -c {output.coverage_file} -s {output.seed} -o {output.metadecoder}
+        metadecoder cluster -f {input.contigs_decompressed} -c {output.coverage_file} -s {output.seed} -o {params.metadecoder}
+        echo metadecoder cluster done
         """
-# NOTE: Likely needs sam files as input >(

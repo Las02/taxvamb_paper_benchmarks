@@ -13,5 +13,5 @@ rule semibin:
     shell:
         """
         SemiBin2 multi_easy_bin -i {input.contigs} -b {input.bamfiles} -o {output.semibin} \
-        –separator C -t {threads} –write-pre-reclustering-bins –self-supervised &> {log}
+        --separator C -t {threads} --write-pre-reclustering-bins --self-supervised # &> {log}
         """

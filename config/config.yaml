@@ -1,6 +1,8 @@
 # Use cuda for the vamb part of the pipeline. Uncomment to use cuda
 # cuda: "True"
 
+database: "/maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/database_to_be_moved/data.ace.uq.edu.au/public/gtdb/data/releases/latest"
+
 # Use minimap - if False uses strobealign
 use_minimap: True
 

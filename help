@@ -1,4 +1,4 @@
-
+/maps/projects/rasmussen/people/bxc755/conda_env/conda/bin/snakemake --snakefile /maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/taxvamb_paper_benchmarks/snakefile.smk --rerun-triggers mtime --nolock -c 40 -p --keep-going --software-deployment-method apptainer --use-conda --rerun-incomplete --keep-incomplete --config bam_contig=taxvamb_paper_benchmarks/data_configs/esrum_airways_bamfile_contigs.tsv output_directory=airways
 MetaBAT: Metagenome Binning based on Abundance and Tetranucleotide frequency (version 2:2.17.66-ga512006-dirty; 20250124_080221)
 by Don Kang (ddkang@lbl.gov), Feng Li, Jeff Froula, Rob Egan, and Zhong Wang (zhongwang@lbl.gov) 
 

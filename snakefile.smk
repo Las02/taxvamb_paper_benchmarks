@@ -127,14 +127,15 @@ mem_gb_fn  = lambda rulename: config.get(rulename, {"mem_gb": default_mem_gb}).g
 rulename = "all"
 rule all:
     input:
-        semibin = expand(OUTDIR /  "{key}/semibin", key=sample_id.keys()),
-        metadecoder = expand(OUTDIR / "{key}/metadecoder/clusters.metadecoder", key=sample_id.keys()),
-        metabat = expand(OUTDIR /  "{key}/metabat", key=sample_id.keys()),
+        # metadecoder = expand(OUTDIR / "{key}/metadecoder/seed.seed", key=sample_id.keys()),
+        # metabat = expand(OUTDIR /  "{key}/metabat/depht.txt", key=sample_id.keys()),
+        # semibin = expand(OUTDIR /  "{key}/semibin", key=sample_id.keys()),
         comebin = expand(OUTDIR /  "{key}/comebin", key=sample_id.keys()),
-        vamb_default = expand( OUTDIR / "{key}" / 'vamb_default' / 'vae_clusters_unsplit.tsv', key=sample_id.keys()),
-        metabuli=   expand( OUTDIR /  "{key}/classifiers/metabuli",    key=sample_id.keys()),
-        kraken2 =  expand( OUTDIR /  "{key}/classifiers/kraken2",          key=sample_id.keys()),     
-        centrifuge = expand(OUTDIR /  "{key}/classifiers/centrifuge",           key=sample_id.keys()),
+        # vamb_default = expand( OUTDIR / "{key}" / 'vamb_default' / 'vae_clusters_unsplit.tsv', key=sample_id.keys()),
+        # metabuli=   expand( OUTDIR /  "{key}/classifiers/metabuli",    key=sample_id.keys()),
+        # mmseqs2 = expand(OUTDIR /  "{key}/classifiers/mmseqs2", key=sample_id.keys()),
+        # kraken2 =  expand( OUTDIR /  "{key}/classifiers/kraken2",          key=sample_id.keys()),     
+        # centrifuge = expand(OUTDIR /  "{key}/classifiers/centrifuge",           key=sample_id.keys()),
 
 #### Rules general for all tools ####
 

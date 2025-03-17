@@ -4,4 +4,4 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - mmseqs2==17.b804f-1
+  - mmseqs2==17.b804f
