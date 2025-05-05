@@ -9,11 +9,26 @@ Using the CLI wrapper is recommended as it also does some checks for correctness
 
 Clone the repository and install the package and snakemake
 ```
+# Install snakemake wrapper
 git clone git@github.com:Las02/taxvamb_paper_benchmarks.git
 cd taxvamb_paper_benchmarks
 uv pip install -e .
+
+# Other dependencies
 mamba install -c bioconda snakemake==8.27.1
 mamba install -c conda-forge apptainer
+
+# Install taxconverter in env named `taxconv`
+mamba create -y -n taxconv python==3.8
+conda activate taxconv
+cd ..
+git clone git@github.com:RasmussenLab/taxconverter.git
+cd taxconverter
+pip install -e .
+cd data
+unzip linage.zip
+
+conda deactivate
 
 ```
 

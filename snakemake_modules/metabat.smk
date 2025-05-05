@@ -1,5 +1,5 @@
 # Contigs are given outside of the scope of the output directory
-# metabat usest singularity which mounts only the output directory
+# metabat uses singularity which mounts only the output directory
 # we therefore need to copy the contigs inside the output directory to be mounted properbly
 rulename = "tmp_copy"
 rule tmp_copy:
@@ -8,7 +8,7 @@ rule tmp_copy:
     output: 
         tmp_contigs = temp("{key}/contigs.fasta.gz"),
     threads: threads_fn(rulename)
-    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename), gpu=gpu_fn(rulename)
     shell:
         """
         cp {input.contigs} {output.tmp_contigs}
@@ -18,13 +18,13 @@ rulename = "metabat"
 rule metabat:
     input:
         contigs = temp("{key}/contigs.fasta.gz"),
-        bamfiles = lambda wildcards: expand(OUTDIR / "{key}/assembly_mapping_output/mapped_sorted/{id}.bam.sort", key=wildcards.key, id=sample_id[wildcards.key]),
+        bamfiles = lambda wildcards: expand(OUTDIR / "{key}/assembly_mapping_output/mapped_sorted/{id}.sort.bam", key=wildcards.key, id=sample_id[wildcards.key]),
     output: 
         depht = OUTDIR /  "{key}/metabat/depht.txt",
         metabat = directory(OUTDIR /  "{key}/metabat/metabat"),
     threads: threads_fn(rulename)
     params:
-    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename), gpu=gpu_fn(rulename)
     benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
     log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
     container: "docker://metabat/metabat:v2.17-66-ga512006"
@@ -32,8 +32,32 @@ rule metabat:
         """
         jgi_summarize_bam_contig_depths --outputDepth {output.depht} {input.bamfiles}
         mkdir -p {output.metabat}
-        metabat2 -i {input.contigs} -a {output.depht} -o {output.metabat}/bin
+        metabat2 -i {input.contigs} -a {output.depht} -o {output.metabat}/metabat
         """
+
+
+# NOTE: moved files to metabat/ dir. Should be default when running the tool now: works with other files in bin dir as --extension filters out correctly
+rulename = "metabat_checkm"
+rule metabat_checkm:
+    input: 
+        bin_dir = directory(OUTDIR /  "{key}/metabat/metabat"),
+    output:
+        outdir = directory(OUTDIR /  "{key}/checkm2/metabat"),
+    threads: threads_fn(rulename)
+    params:
+        database = config.get("checkm2_database")
+    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename), gpu=gpu_fn(rulename)
+    benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
+    log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
+    conda: THIS_FILE_DIR / "envs/checkm2.yaml"
+    shell:
+        """
+        checkm2 predict --threads {threads} --input {input.bin_dir} --output-directory {output.outdir} --extension '.fa' --database_path {params.database}
+        """
+
+
+
+
 
 #     (base) [bxc755@esrumcmpn05fl taxvamb_benchmarks]$ /maps/projects/rasmussen/people/bxc755/conda_env/conda/bin/snakemake --snakefile /maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/taxvamb_paper_benchmarks/snakefile.smk --rerun-triggers mtime --nolock -c 40 -p --keep-going --software-deployment-method apptainer --use-conda --rerun-incomplete --keep-incomplete --config bam_contig=../taxvamb_paper_benchmarks/data_configs/esrum_airways_bamfile_contigs.tsv output_directory=airways --direct ory airways
 

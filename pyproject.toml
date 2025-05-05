@@ -13,5 +13,8 @@ dynamic = ["dependencies", "optional-dependencies"]
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
 
+[tool.uv.workspace]
+members = ["transfer", "utils", "util"]
+
 [project.scripts]
 taxvamb_benchmark = "workflow_PlasMAAG.__main__:main"

@@ -1,14 +1,6 @@
 sample 				bamfile				contig
-#Airways	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/bam/10.bam	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/tmp_contigs_2kbp.fna.gz
-#Airways	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/bam/11.bam	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/tmp_contigs_2kbp.fna.gz
-#Airways	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/bam/12.bam	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/tmp_contigs_2kbp.fna.gz
-#Airways	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/bam/23.bam	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/tmp_contigs_2kbp.fna.gz
-#Airways	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/bam/26.bam	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/tmp_contigs_2kbp.fna.gz
-#Airways	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/bam/27.bam	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/tmp_contigs_2kbp.fna.gz
-#Airways	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/bam/4.bam 	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/tmp_contigs_2kbp.fna.gz
-#Airways	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/bam/7.bam 	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/tmp_contigs_2kbp.fna.gz
-#Airways	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/bam/8.bam 	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/tmp_contigs_2kbp.fna.gz
-#Airways	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/bam/9.bam 	/maps/projects/rasmussen/scratch/ptracker/Benchmark_vamb_cli/data/vambnew/Airways/tmp_contigs_2kbp.fna.gz
+# This document is read using pandas and can therefore contain comments with # - love it or hate it, i think it's cool
+## Biological data:
 # PRJNA1003562
 PRJNA1003562  /maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/data/PRJNA1003562/bam/54.bam /maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/data/PRJNA1003562/catalogue.fna.gz
 PRJNA1003562  /maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/data/PRJNA1003562/bam/55.bam /maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/data/PRJNA1003562/catalogue.fna.gz
@@ -39,7 +31,3 @@ PRJNA783873  /maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/data/PRJN
 PRJNA783873  /maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/data/PRJNA783873/bam/55.bam /maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/data/PRJNA783873/catalogue.fna.gz
 PRJNA783873  /maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/data/PRJNA783873/bam/56.bam /maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/data/PRJNA783873/catalogue.fna.gz
 PRJNA783873  /maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/data/PRJNA783873/bam/57.bam /maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/data/PRJNA783873/catalogue.fna.gz
-
-
-
-

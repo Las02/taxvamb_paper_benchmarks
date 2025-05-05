@@ -127,22 +127,15 @@ mem_gb_fn  = lambda rulename: config.get(rulename, {"mem_gb": default_mem_gb}).g
 rulename = "all"
 rule all:
     input:
-        checkm_default_vamb = expand(OUTDIR /  "{key}/checkm2/default_vamb",key=sample_id.keys()),
-        # checkm_gtdb = expand(OUTDIR /  "{key}/checkm2/gtdb_taxvamb",key=sample_id.keys()),
-        # gunc = expand(OUTDIR /  "{key}/gunc",key=sample_id.keys()),
-        # bins_gtdb =     expand(os.path.join(OUTDIR,"{key}",'gtdb_taxvamb_default','vaevae_clusters_unsplit.tsv'),key=sample_id.keys()),
-        # bins_kalmari =  expand(os.path.join(OUTDIR,"{key}",'kalmari_taxvamb_default','vaevae_clusters_unsplit.tsv'),key=sample_id.keys()),
-        # bins_trembl =   expand(os.path.join(OUTDIR,"{key}",'trembl_taxvamb_default','vaevae_clusters_unsplit.tsv'),key=sample_id.keys()),
-        # bins_trembl_fasta =   expand(os.path.join(OUTDIR,"{key}",'trembl_taxvamb_default_bins'),key=sample_id.keys()),
-        # bins_gtdb_fasta =   expand(os.path.join(OUTDIR,"{key}",'gtdb_taxvamb_default_bins'),key=sample_id.keys()),
-        # bins_kalmari_fasta =   expand(os.path.join(OUTDIR,"{key}",'kalmari_taxvamb_default_bins'),key=sample_id.keys()),
-        # checkm_gtdb = expand(OUTDIR /  "{key}/checkm2/gtdb_taxvamb",key=sample_id.keys()),
         # checkm_metabat = expand(OUTDIR /  "{key}/checkm2/metabat", key=sample_id.keys()),
         # checkm_semibin = expand(OUTDIR /  "{key}/checkm2/semibin", key=sample_id.keys()),
-        # checkm_comebin = expand(OUTDIR /  "{key}/checkm2/comebin", key=sample_id.keys()),
         # checkm_metadecoder = expand(OUTDIR /  "{key}/checkm2/metadecoder", key=sample_id.keys()),
         # comebin = expand(OUTDIR /  "{key}/comebin", key=sample_id.keys()),
         # vamb_default = expand( OUTDIR / "{key}" / 'vamb_default' / 'vae_clusters_unsplit.tsv', key=sample_id.keys()),
+        # mmseqs2 =expand(  OUTDIR /  "{key}/classifiers/mmseqs2/kalmari", key=sample_id.keys()),
+        # mmseqs2 =expand( os.path.join(OUTDIR,"{key}",'taxvamb_default','vae_clusters_unsplit.tsv'), key=sample_id.keys()),
+        trembl =expand(  OUTDIR /  "{key}/classifiers/mmseqs2/trembl", key=sample_id.keys()),
+        gtdb =expand(  OUTDIR /  "{key}/classifiers/mmseqs2/gtdb", key=sample_id.keys()),
         # metadecoder = expand(OUTDIR / "{key}/metadecoder/seed.seed", key=sample_id.keys()),
         # metabat = expand(OUTDIR /  "{key}/metabat/depht.txt", key=sample_id.keys()),
         # semibin = expand(OUTDIR /  "{key}/semibin", key=sample_id.keys()),
@@ -150,39 +143,8 @@ rule all:
         # mmseqs2 = expand(OUTDIR /  "{key}/classifiers/mmseqs2", key=sample_id.keys()),
         # kraken2 =  expand( OUTDIR /  "{key}/classifiers/kraken2",          key=sample_id.keys()),     
         # centrifuge = expand(OUTDIR /  "{key}/classifiers/centrifuge",           key=sample_id.keys()),
-        # checkm_kalmari = expand(OUTDIR /  "{key}/checkm2/kalmari_taxvamb",key=sample_id.keys()), # Only for the 3 new biological samples
-        # checkm_trembl = expand(OUTDIR /  "{key}/checkm2/trembl_taxvamb",key=sample_id.keys()),# Only for the 3 new biological samples
-
-rule airways:
-    input:
-        checkm_default_vamb = expand(OUTDIR /  "{key}/checkm2/default_vamb",key=sample_id.keys()),
-        checkm_gtdb = expand(OUTDIR /  "{key}/checkm2/gtdb_taxvamb",key=sample_id.keys()),
-        # gunc = expand(OUTDIR /  "{key}/gunc",key=sample_id.keys()),
-        # bins_gtdb =     expand(os.path.join(OUTDIR,"{key}",'gtdb_taxvamb_default','vaevae_clusters_unsplit.tsv'),key=sample_id.keys()),
-        # bins_kalmari =  expand(os.path.join(OUTDIR,"{key}",'kalmari_taxvamb_default','vaevae_clusters_unsplit.tsv'),key=sample_id.keys()),
-        # bins_trembl =   expand(os.path.join(OUTDIR,"{key}",'trembl_taxvamb_default','vaevae_clusters_unsplit.tsv'),key=sample_id.keys()),
-        # bins_trembl_fasta =   expand(os.path.join(OUTDIR,"{key}",'trembl_taxvamb_default_bins'),key=sample_id.keys()),
-        # bins_gtdb_fasta =   expand(os.path.join(OUTDIR,"{key}",'gtdb_taxvamb_default_bins'),key=sample_id.keys()),
-        # bins_kalmari_fasta =   expand(os.path.join(OUTDIR,"{key}",'kalmari_taxvamb_default_bins'),key=sample_id.keys()),
-        # checkm_gtdb = expand(OUTDIR /  "{key}/checkm2/gtdb_taxvamb",key=sample_id.keys()),
-        # checkm_metabat = expand(OUTDIR /  "{key}/checkm2/metabat", key=sample_id.keys()),
-        # checkm_semibin = expand(OUTDIR /  "{key}/checkm2/semibin", key=sample_id.keys()),
-        # checkm_comebin = expand(OUTDIR /  "{key}/checkm2/comebin", key=sample_id.keys()),
-        # checkm_metadecoder = expand(OUTDIR /  "{key}/checkm2/metadecoder", key=sample_id.keys()),
-        # comebin = expand(OUTDIR /  "{key}/comebin", key=sample_id.keys()),
-        # vamb_default = expand( OUTDIR / "{key}" / 'vamb_default' / 'vae_clusters_unsplit.tsv', key=sample_id.keys()),
-        # metadecoder = expand(OUTDIR / "{key}/metadecoder/seed.seed", key=sample_id.keys()),
-        # metabat = expand(OUTDIR /  "{key}/metabat/depht.txt", key=sample_id.keys()),
-        # semibin = expand(OUTDIR /  "{key}/semibin", key=sample_id.keys()),
-        # metabuli=   expand( OUTDIR /  "{key}/classifiers/metabuli",    key=sample_id.keys()),
-        # mmseqs2 = expand(OUTDIR /  "{key}/classifiers/mmseqs2", key=sample_id.keys()),
-        # kraken2 =  expand( OUTDIR /  "{key}/classifiers/kraken2",          key=sample_id.keys()),     
-        # centrifuge = expand(OUTDIR /  "{key}/classifiers/centrifuge",           key=sample_id.keys()),
-        # checkm_kalmari = expand(OUTDIR /  "{key}/checkm2/kalmari_taxvamb",key=sample_id.keys()), # Only for the 3 new biological samples
-        # checkm_trembl = expand(OUTDIR /  "{key}/checkm2/trembl_taxvamb",key=sample_id.keys()),# Only for the 3 new biological samples
 
 #### Rules general for all tools ####
-
 
 # If only reads are passed run metaspades to assemble the reads
 rulename = "spades"
@@ -329,7 +291,7 @@ rule sort:
         # OUTDIR / "{key}/assembly_mapping_output/mapped/{id}.bam",
         bamfiles,
     output:
-        temp(OUTDIR / "{key}/assembly_mapping_output/mapped_sorted/{id}.sort.bam"),
+        OUTDIR / "{key}/assembly_mapping_output/mapped_sorted/{id}.sort.bam",
     threads: threads_fn(rulename)
     resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
     benchmark: config.get("benchmark", "benchmark/") + "{key}_{id}_" + rulename
@@ -341,38 +303,6 @@ rule sort:
 	# samtools index {output} 2>> {log}
 	"""
 
-rulename = "centrifuge_db"
-rule centrifuge_db:
-    input:
-        table = "/maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/centri/seqid2taxid.map",
-        tax = "/maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/centri/taxonomy/nodes.dmp",
-        names = "/maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/centri/taxonomy/names.dmp",
-        contigs = "/maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/centri/input-sequences.fna"
-    output:
-        "/maps/projects/rasmussen/people/bxc755/taxvamb_benchmarks/centri/abv"
-    params:
-        create_fasta = SRC_DIR / "create_fasta.py"
-    threads: threads_fn(rulename)
-    # default_target: True
-    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
-    conda: THIS_FILE_DIR / "envs/centrifuge.yaml"
-    shell:
-        """
-             centrifuge-build -p {threads} --conversion-table {input.table} \
-            --taxonomy-tree {input.tax} --name-table {input.names} \
-             {input.contigs} {output}
-        """
-rulename = "kraken_db"
-rule kraken_db:
-    threads: threads_fn(rulename)
-    # default_target: True
-    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
-    conda: THIS_FILE_DIR / "envs/kraken2.yaml"
-    shell:
-        """
-             kraken2-build --standard --db kraken_database --use-ftp --threads {threads}
-        """
-
 
 ## Include the specific rules for each tool
 include: THIS_FILE_DIR / "snakemake_modules/vamb_default.smk"
@@ -381,4 +311,3 @@ include: THIS_FILE_DIR / "snakemake_modules/comebin.smk"
 include: THIS_FILE_DIR / "snakemake_modules/metadecoder.smk"
 include: THIS_FILE_DIR / "snakemake_modules/semibin.smk"
 include: THIS_FILE_DIR / "snakemake_modules/taxonomy_classifiers.smk"
-include: THIS_FILE_DIR / "snakemake_modules/gunc.smk"

@@ -26,6 +26,7 @@ OUTDIR = Path("") if config.get("output_directory") is None else Path(config.get
 default_walltime = config.get("default_walltime", "48:00:00")
 default_threads = config.get("default_threads", 16)
 default_mem_gb = config.get("default_mem_gb", 50)
+default_gpu = ""
 use_minimap = config.get("use_minimap", True)
 
 # Minimum contig length used
@@ -123,13 +124,31 @@ if config.get("bam_contig") != None:
 threads_fn = lambda rulename: config.get(rulename, {"threads": default_threads}).get("threads", default_threads) 
 walltime_fn  = lambda rulename: config.get(rulename, {"walltime": default_walltime}).get("walltime", default_walltime) 
 mem_gb_fn  = lambda rulename: config.get(rulename, {"mem_gb": default_mem_gb}).get("mem_gb", default_mem_gb) 
+gpu_fn  = lambda rulename: config.get(rulename, {"gpu": default_gpu}).get("gpu", default_gpu) 
 
 rulename = "all"
 rule all:
     input:
+        # Biodata (3)
+        checkm = expand(OUTDIR /  "{key}/tmp/checkm.done",key=sample_id.keys()), ## WHEN USING THIS MAKE SURE NOT TO RERUN ANYTHING
         checkm_default_vamb = expand(OUTDIR /  "{key}/checkm2/default_vamb",key=sample_id.keys()),
+        gunc = expand(OUTDIR /  "{key}/tmp/gunc.done",key=sample_id.keys()), ## WHEN USING THIS MAKE SURE NOT TO RERUN ANYTHING
+        gunc_2 = expand(OUTDIR /  "{key}/tmp/gunc_2.done",key=sample_id.keys()), ## WHEN USING THIS MAKE SURE NOT TO RERUN ANYTHING
+        checkm_kalmari = expand(OUTDIR /  "{key}/checkm2/kalmari_taxvamb",key=sample_id.keys()), # Only for the 3 new biological samples
+        checkm_trembl = expand(OUTDIR /  "{key}/checkm2/trembl_taxvamb",key=sample_id.keys()),# Only for the 3 new biological samples
+        # running
+        checkm_gtdb = expand(OUTDIR /  "{key}/checkm2/gtdb_taxvamb",key=sample_id.keys()),
+        # from here to run
+        # checkm_centrifuge = expand(OUTDIR /  "{key}/checkm2/centrifuge_taxvamb_no_predictor",key=sample_id.keys()), 
+        # checkm_kraken = expand(OUTDIR /  "{key}/checkm2/kraken_taxvamb_no_predictor",key=sample_id.keys()),
+        # checkm_metabuli = expand(OUTDIR /  "{key}/checkm2/metabuli_taxvamb_no_predictor",key=sample_id.keys()), 
+        # checkm_centrifuge = expand(OUTDIR /  "{key}/checkm2/centrifuge_taxvamb",key=sample_id.keys()), 
+        # checkm_kraken = expand(OUTDIR /  "{key}/checkm2/kraken_taxvamb",key=sample_id.keys()),
+        # checkm_metabuli = expand(OUTDIR /  "{key}/checkm2/metabuli_taxvamb",key=sample_id.keys()), 
+        # metabuli= expand(OUTDIR /  "{key}/classifiers/metabuli",key=sample_id.keys()),
+        # kraken2 = expand(OUTDIR /  "{key}/classifiers/kraken2/kraken2_predictions.tsv",key=sample_id.keys()),
+        # centrifuge = expand(OUTDIR /  "{key}/classifiers/centrifuge/centrifuge_predictions.tsv",key=sample_id.keys()),
         # checkm_gtdb = expand(OUTDIR /  "{key}/checkm2/gtdb_taxvamb",key=sample_id.keys()),
-        # gunc = expand(OUTDIR /  "{key}/gunc",key=sample_id.keys()),
         # bins_gtdb =     expand(os.path.join(OUTDIR,"{key}",'gtdb_taxvamb_default','vaevae_clusters_unsplit.tsv'),key=sample_id.keys()),
         # bins_kalmari =  expand(os.path.join(OUTDIR,"{key}",'kalmari_taxvamb_default','vaevae_clusters_unsplit.tsv'),key=sample_id.keys()),
         # bins_trembl =   expand(os.path.join(OUTDIR,"{key}",'trembl_taxvamb_default','vaevae_clusters_unsplit.tsv'),key=sample_id.keys()),
@@ -150,14 +169,41 @@ rule all:
         # mmseqs2 = expand(OUTDIR /  "{key}/classifiers/mmseqs2", key=sample_id.keys()),
         # kraken2 =  expand( OUTDIR /  "{key}/classifiers/kraken2",          key=sample_id.keys()),     
         # centrifuge = expand(OUTDIR /  "{key}/classifiers/centrifuge",           key=sample_id.keys()),
-        # checkm_kalmari = expand(OUTDIR /  "{key}/checkm2/kalmari_taxvamb",key=sample_id.keys()), # Only for the 3 new biological samples
-        # checkm_trembl = expand(OUTDIR /  "{key}/checkm2/trembl_taxvamb",key=sample_id.keys()),# Only for the 3 new biological samples
 
+rule Biotest_Airways:
+    input:
+        # checkm = expand(OUTDIR /  "{key}/tmp/checkm.done",key=sample_id.keys()), ## WHEN USING THIS MAKE SURE NOT TO RERUN ANYTHING
+        test = expand(OUTDIR /  "{key}/metabuli_taxvamb_default/vaevae_clusters_split.tsv",key=sample_id.keys()), ## WHEN USING THIS MAKE SURE NOT TO RERUN ANYTHING
+        #test2 = expand(OUTDIR /  "{key}/1_metabuli_taxvamb_default/vaevae_clusters_split.tsv",key=sample_id.keys()), ## WHEN USING THIS MAKE SURE NOT TO RERUN ANYTHING
+rule Biotest:
+    input:
+        checkm = expand(OUTDIR /  "{key}/tmp/checkm.done",key=sample_id.keys()), ## WHEN USING THIS MAKE SURE NOT TO RERUN ANYTHING
 rule airways:
     input:
-        checkm_default_vamb = expand(OUTDIR /  "{key}/checkm2/default_vamb",key=sample_id.keys()),
-        checkm_gtdb = expand(OUTDIR /  "{key}/checkm2/gtdb_taxvamb",key=sample_id.keys()),
-        # gunc = expand(OUTDIR /  "{key}/gunc",key=sample_id.keys()),
+        # Biodata (3)
+        # checkm = expand(OUTDIR /  "{key}/tmp/run_all.done",key=sample_id.keys()), ## WHEN USING THIS MAKE SURE NOT TO RERUN ANYTHING
+        test = expand(OUTDIR /  "{key}/metabuli_taxvamb_default/vaevae_clusters_split.tsv",key=sample_id.keys()), ## WHEN USING THIS MAKE SURE NOT TO RERUN ANYTHING
+        test2 = expand(OUTDIR /  "{key}/kraken_taxvamb_default/vaevae_clusters_split.tsv",key=sample_id.keys()), ## WHEN USING THIS MAKE SURE NOT TO RERUN ANYTHING
+        # test3 = expand(OUTDIR /  "{key}/gtdb_taxvamb_default/vaevae_clusters_split.tsv",key=sample_id.keys()), ## WHEN USING THIS MAKE SURE NOT TO RERUN ANYTHING
+        test4 = expand(OUTDIR /  "{key}/centrifuge_taxvamb/vaevae_clusters_split.tsv",key=sample_id.keys()), ## WHEN USING THIS MAKE SURE NOT TO RERUN ANYTHING
+        # checkm_default_vamb = expand(OUTDIR /  "{key}/checkm2/default_vamb",key=sample_id.keys()),
+        # gunc = expand(OUTDIR /  "{key}/tmp/gunc.done",key=sample_id.keys()), ## WHEN USING THIS MAKE SURE NOT TO RERUN ANYTHING
+        # gunc_2 = expand(OUTDIR /  "{key}/tmp/gunc_2.done",key=sample_id.keys()), ## WHEN USING THIS MAKE SURE NOT TO RERUN ANYTHING
+        # checkm_kalmari = expand(OUTDIR /  "{key}/checkm2/kalmari_taxvamb",key=sample_id.keys()), # Only for the 3 new biological samples
+        # checkm_trembl = expand(OUTDIR /  "{key}/checkm2/trembl_taxvamb",key=sample_id.keys()),# Only for the 3 new biological samples
+        # running
+        # checkm_gtdb = expand(OUTDIR /  "{key}/checkm2/gtdb_taxvamb",key=sample_id.keys()),
+        # from here to run
+        # checkm_centrifuge = expand(OUTDIR /  "{key}/checkm2/centrifuge_taxvamb_no_predictor",key=sample_id.keys()), 
+        # checkm_kraken = expand(OUTDIR /  "{key}/checkm2/kraken_taxvamb_no_predictor",key=sample_id.keys()),
+        # checkm_metabuli = expand(OUTDIR /  "{key}/checkm2/metabuli_taxvamb_no_predictor",key=sample_id.keys()), 
+        # checkm_centrifuge = expand(OUTDIR /  "{key}/checkm2/centrifuge_taxvamb",key=sample_id.keys()), 
+        # checkm_kraken = expand(OUTDIR /  "{key}/checkm2/kraken_taxvamb",key=sample_id.keys()),
+        # checkm_metabuli = expand(OUTDIR /  "{key}/checkm2/metabuli_taxvamb",key=sample_id.keys()), 
+        # metabuli= expand(OUTDIR /  "{key}/classifiers/metabuli",key=sample_id.keys()),
+        # kraken2 = expand(OUTDIR /  "{key}/classifiers/kraken2/kraken2_predictions.tsv",key=sample_id.keys()),
+        # centrifuge = expand(OUTDIR /  "{key}/classifiers/centrifuge/centrifuge_predictions.tsv",key=sample_id.keys()),
+        # checkm_gtdb = expand(OUTDIR /  "{key}/checkm2/gtdb_taxvamb",key=sample_id.keys()),
         # bins_gtdb =     expand(os.path.join(OUTDIR,"{key}",'gtdb_taxvamb_default','vaevae_clusters_unsplit.tsv'),key=sample_id.keys()),
         # bins_kalmari =  expand(os.path.join(OUTDIR,"{key}",'kalmari_taxvamb_default','vaevae_clusters_unsplit.tsv'),key=sample_id.keys()),
         # bins_trembl =   expand(os.path.join(OUTDIR,"{key}",'trembl_taxvamb_default','vaevae_clusters_unsplit.tsv'),key=sample_id.keys()),
@@ -178,11 +224,8 @@ rule airways:
         # mmseqs2 = expand(OUTDIR /  "{key}/classifiers/mmseqs2", key=sample_id.keys()),
         # kraken2 =  expand( OUTDIR /  "{key}/classifiers/kraken2",          key=sample_id.keys()),     
         # centrifuge = expand(OUTDIR /  "{key}/classifiers/centrifuge",           key=sample_id.keys()),
-        # checkm_kalmari = expand(OUTDIR /  "{key}/checkm2/kalmari_taxvamb",key=sample_id.keys()), # Only for the 3 new biological samples
-        # checkm_trembl = expand(OUTDIR /  "{key}/checkm2/trembl_taxvamb",key=sample_id.keys()),# Only for the 3 new biological samples
 
 #### Rules general for all tools ####
-
 
 # If only reads are passed run metaspades to assemble the reads
 rulename = "spades"
@@ -196,7 +239,7 @@ rule spades:
        graph = OUTDIR / "{key}/assembly_mapping_output/spades_{id}/assembly_graph_after_simplification.gfa",
        graphinfo  = OUTDIR / "{key}/assembly_mapping_output/spades_{id}/contigs.paths",
     threads: threads_fn(rulename)
-    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename), gpu=gpu_fn(rulename)
     benchmark: config.get("benchmark", "benchmark/") + "{key}_{id}_" + rulename
     log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_{id}_" + rulename
     conda: THIS_FILE_DIR / "envs/spades_env.yaml"
@@ -214,7 +257,7 @@ rule rename_contigs:
     output:
         OUTDIR / "{key}/assembly_mapping_output/spades_{id}/contigs.renamed.fasta"
     threads: threads_fn(rulename)
-    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename), gpu=gpu_fn(rulename)
     benchmark: config.get("benchmark", "benchmark/") + "{key}_{id}_" + rulename
     log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_{id}_" + rulename
     shell:
@@ -229,7 +272,7 @@ rule cat_contigs:
     output: OUTDIR / "{key}/assembly_mapping_output/contigs.flt.fna.gz"
     threads: threads_fn(rulename)
     params: script =  SRC_DIR / "concatenate.py"
-    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename), gpu=gpu_fn(rulename)
     benchmark: config.get("benchmark", "benchmark/") + "{key}" + rulename
     log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
     conda: THIS_FILE_DIR / "envs/vamb.yaml"
@@ -247,7 +290,7 @@ if use_minimap:
         output:
             mmi = os.path.join(OUTDIR, "{key}", "contigs.flt.mmi")
         threads: threads_fn(rulename)
-        resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+        resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename), gpu=gpu_fn(rulename)
         benchmark: config.get("benchmark", "benchmark/") + "{key}_" + rulename
         log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_" + rulename
         conda: 
@@ -268,7 +311,7 @@ if use_minimap:
         output:
             dict = os.path.join(OUTDIR,"{key}", "contigs.flt.dict")  
         threads: threads_fn(rulename)
-        resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+        resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename), gpu=gpu_fn(rulename)
         benchmark: config.get("benchmark", "benchmark/") + "{key}" + rulename
         log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}" + rulename
         conda:
@@ -289,7 +332,7 @@ if use_minimap:
         output:
             bam = bamfiles_before, 
             # bam = temp(os.path.join(OUTDIR,"mapped/{sample}.bam"))
-        resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+        resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename), gpu=gpu_fn(rulename)
         benchmark: config.get("benchmark", "benchmark/") + "{key}_{id}_" + rulename
         log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_{id}_" + rulename
         conda:
@@ -313,7 +356,7 @@ else:
             output:
                 bamfiles_before,
             threads: threads_fn(rulename)
-            resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+            resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename), gpu=gpu_fn(rulename)
             benchmark: config.get("benchmark", "benchmark/") + "{key}_{id}_" + rulename
             log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_{id}_" + rulename
             conda: THIS_FILE_DIR / "envs/strobe_env.yaml"
@@ -329,9 +372,9 @@ rule sort:
         # OUTDIR / "{key}/assembly_mapping_output/mapped/{id}.bam",
         bamfiles,
     output:
-        temp(OUTDIR / "{key}/assembly_mapping_output/mapped_sorted/{id}.sort.bam"),
+        OUTDIR / "{key}/assembly_mapping_output/mapped_sorted/{id}.sort.bam",
     threads: threads_fn(rulename)
-    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename), gpu=gpu_fn(rulename)
     benchmark: config.get("benchmark", "benchmark/") + "{key}_{id}_" + rulename
     log: config.get("log", f"{str(OUTDIR)}/log/") + "{key}_{id}_" + rulename
     conda: THIS_FILE_DIR / "envs/samtools.yaml"
@@ -354,7 +397,7 @@ rule centrifuge_db:
         create_fasta = SRC_DIR / "create_fasta.py"
     threads: threads_fn(rulename)
     # default_target: True
-    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename), gpu=gpu_fn(rulename)
     conda: THIS_FILE_DIR / "envs/centrifuge.yaml"
     shell:
         """
@@ -366,11 +409,12 @@ rulename = "kraken_db"
 rule kraken_db:
     threads: threads_fn(rulename)
     # default_target: True
-    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename)
+    threads: 60
+    resources: walltime = walltime_fn(rulename), mem_gb = mem_gb_fn(rulename), gpu=gpu_fn(rulename)
     conda: THIS_FILE_DIR / "envs/kraken2.yaml"
     shell:
         """
-             kraken2-build --standard --db kraken_database --use-ftp --threads {threads}
+             kraken2-build --standard --db kraken_database_4 --use-ftp --threads {threads}
         """
 
 
@@ -382,3 +426,4 @@ include: THIS_FILE_DIR / "snakemake_modules/metadecoder.smk"
 include: THIS_FILE_DIR / "snakemake_modules/semibin.smk"
 include: THIS_FILE_DIR / "snakemake_modules/taxonomy_classifiers.smk"
 include: THIS_FILE_DIR / "snakemake_modules/gunc.smk"
+include: THIS_FILE_DIR / "snakemake_modules/extra_taxonomy_classifiers.smk"

@@ -34,3 +34,5 @@ src/workflow_PlasMAAG/__pycache__
 src/workflow_PlasMAAG.egg-info
 http-v2/a/1/9/5/3
 selfcheck
+tmp
+transfer
